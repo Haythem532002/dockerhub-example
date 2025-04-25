@@ -1,7 +1,7 @@
 pipeline {
   agent any
   environment {
-      DOCKER_IMAGE = "haythem22/book-store"
+      DOCKER_IMAGE = "haythem22/dockerhub-example"
       IMAGE_TAG = "latest"
   }
   stages {
