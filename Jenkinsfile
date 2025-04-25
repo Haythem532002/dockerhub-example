@@ -1,7 +1,8 @@
 pipeline {
   agent any
   environment {
-    DOCKERHUB_CREDENTIALS = credentials('haythem22-dockerhub')
+      DOCKER_IMAGE = "haythem22/book-store"
+      IMAGE_TAG = "latest"
   }
   stages {
     stage('Build') {
@@ -9,15 +10,13 @@ pipeline {
         sh 'docker build -t haythem22/dp-alpine:latest .'
       }
     }
-    stage('Login') {
-      steps {
-        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-      }
-    }
-    stage('Push') {
-      steps {
-        sh 'docker push haythem22/dp-alpine:latest'
-      }
+    stage('Push to Docker Hub') {
+        steps {
+            withCredentials([usernamePassword(credentialsId: 'haythem22-dockerhub', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                sh 'echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin'
+                sh "docker push ${DOCKER_IMAGE}:${IMAGE_TAG}"
+            }
+        }
     }
   }
   post {
